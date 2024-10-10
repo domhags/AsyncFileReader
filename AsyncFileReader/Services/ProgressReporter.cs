@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-class ProgressReporter
+﻿class ProgressReporter
 {
     public static async Task ShowProgressAsync(CancellationToken cancellationToken)
     {

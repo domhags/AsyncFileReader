@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-
-class Program
+﻿class Program
 {
+    [STAThread]
     static async Task Main(string[] args)
     {
         while (true)

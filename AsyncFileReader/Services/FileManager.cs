@@ -1,9 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-
-class FileManager
+﻿class FileManager
 {
     private static string filePath = @"C:\Export\Hagspiel\AsyncFileReader\text.txt"; // Beispielpfad zur Testdatei
     private static string fileContent; // Variable für den Dateiinhalt
