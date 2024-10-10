@@ -1,6 +1,5 @@
 ﻿class Program
 {
-    [STAThread]
     static async Task Main(string[] args)
     {
         while (true)
