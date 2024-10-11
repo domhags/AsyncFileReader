@@ -1,26 +1,70 @@
-﻿class FileManager
+﻿using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+class FileManager
 {
-    private static string filePath = @"C:\Export\Hagspiel\AsyncFileReader\text.txt"; // Beispielpfad zur Testdatei
+    private static string filePath; // Variable für den Dateipfad
     private static string fileContent; // Variable für den Dateiinhalt
     private static int lineCount; // Variable für die Anzahl der Zeilen
+
+    // Öffentliche Eigenschaft für den Dateipfad
+    public static string FilePath
+    {
+        get { return filePath; }
+    }
+
+    // Methode zum Öffnen eines Dateidialogs
+    public static void OpenFileDialog()
+    {
+        Thread staThread = new Thread(() =>  // SingleThread da es Probleme gibt mit Dialogfenstern in der Konsole
+        {
+            using (var openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = @"C:\"; // Standard-Startverzeichnis
+                openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"; // Filter für Dateitypen
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)  // Beim Klicken auf "OK"
+                {
+                    // Speichert den ausgewählten Dateipfad
+                    filePath = openFileDialog.FileName;
+                    Console.WriteLine($"Datei ausgewählt: {filePath}");
+                }
+                else
+                {
+                    Console.WriteLine("Es wurde keine Datei ausgewählt.");
+                }
+            }
+        });
+
+        staThread.SetApartmentState(ApartmentState.STA);  // Setzt auf den STA Zustand - Single Thread Apartment
+        staThread.Start(); // Startet den Thread
+        staThread.Join(); // Warten, bis der Thread beendet ist
+    }
 
     public static async Task ReadFileAsync()
     {
         try
         {
-            // Asynchrones Einlesen der Datei
+            // Überprüfen, ob der Dateipfad gesetzt wurde
+            if (string.IsNullOrEmpty(filePath))
+            {
+                Console.WriteLine("Es wurde keine Datei ausgewählt.");
+                return;
+            }
+
             using var cts = new CancellationTokenSource(); // Erstellen eines Cancellation-Token Objekts
             var progressTask = ProgressReporter.ShowProgressAsync(cts.Token); // Startet die Fortschritt-Methode
 
             // Dateiinhalt asynchron einlesen
             fileContent = await ReadFileContentAsync(filePath);
 
-            /* Environment.NewLine steht für die Zeilenendesequenz.
-            * Die Split-Methode teilt den Dateiinhalt (fileContent) an jeder neuen Zeile auf und gibt ein Array zurück.
-            * StringSplitOptions.None bedeutet, dass auch leere Zeilen im Array enthalten bleiben.
-            * Length gibt die Anzahl der Elemente im Array zurück, was der Anzahl der Zeilen im Dateiinhalt entspricht.*/
-            lineCount = fileContent.Split(new[] { Environment.NewLine }, StringSplitOptions.None).Length; // Zeilen zählen
-
+            // Zeilen zählen - \r\n sind Windows spezifisch (Environment.NewLine - allgemein), 
+            lineCount = fileContent.Split(new[] { "\r\n" }, StringSplitOptions.None).Length;
 
             cts.Cancel(); // Stoppe die Fortschrittsanzeige
             Console.WriteLine("Datei wurde erfolgreich eingelesen.");
@@ -47,7 +91,7 @@
         }
 
         using var reader = new StreamReader(filePath);
-        return await reader.ReadToEndAsync();
+        return await reader.ReadToEndAsync();  // Eigene Methode vom StreamReader - liest Bis zum Ende ein
     }
 
     public static void ShowLineCount()

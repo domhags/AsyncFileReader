@@ -7,7 +7,7 @@
             Console.Clear();
             Console.WriteLine("Willkommen beim Datei-Reader!");
             Console.WriteLine("Bitte wählen Sie eine Option:");
-            Console.WriteLine("1. Datei einlesen");
+            Console.WriteLine("1. Datei auswählen und einlesen");
             Console.WriteLine("2. Anzahl der Zeilen anzeigen");
             Console.WriteLine("3. Datei-Inhalt anzeigen");
             Console.WriteLine("4. Beenden");
@@ -17,7 +17,18 @@
             switch (choice)
             {
                 case "1":
-                    await FileManager.ReadFileAsync();
+                    // Ruft den OpenFileDialog auf, damit der Benutzer eine Datei auswählen kann
+                    FileManager.OpenFileDialog();
+
+                    // Falls eine Datei ausgewählt wurde, wird sie asynchron eingelesen
+                    if (!string.IsNullOrEmpty(FileManager.FilePath)) // Überprüfen, ob eine Datei ausgewählt wurde
+                    {
+                        await FileManager.ReadFileAsync();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Es wurde keine Datei ausgewählt.");
+                    }
                     break;
                 case "2":
                     FileManager.ShowLineCount();
