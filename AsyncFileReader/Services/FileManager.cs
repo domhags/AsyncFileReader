@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Windows.Forms; // Wird benötigt für Datei auswählen Fenster
 
 class FileManager
 {
@@ -25,8 +25,8 @@ class FileManager
             {
                 openFileDialog.InitialDirectory = @"C:\"; // Standard-Startverzeichnis
                 openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*"; // Filter für Dateitypen
-                openFileDialog.FilterIndex = 1;
-                openFileDialog.RestoreDirectory = true;
+                openFileDialog.FilterIndex = 1; // Standard Filter für *.txt
+                openFileDialog.RestoreDirectory = true; // kehrt immer zum InitialDirectory zurück
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)  // Beim Klicken auf "OK"
                 {
@@ -83,6 +83,7 @@ class FileManager
         }
     }
 
+    // Methode zum Einlesen der Datei
     private static async Task<string> ReadFileContentAsync(string filePath)
     {
         if (!File.Exists(filePath))
@@ -94,11 +95,13 @@ class FileManager
         return await reader.ReadToEndAsync();  // Eigene Methode vom StreamReader - liest Bis zum Ende ein
     }
 
+    // Methode zum Anzeigen der Zeilen der eingelesenen Datei
     public static void ShowLineCount()
     {
         Console.WriteLine($"Die Datei enthält {lineCount} Zeilen.");
     }
 
+    // Methode zum Anzeigen des Inhalts der eingelesenen Datei
     public static void ShowFileContent()
     {
         if (string.IsNullOrEmpty(fileContent))

@@ -17,7 +17,7 @@
             switch (choice)
             {
                 case "1":
-                    // Ruft den OpenFileDialog auf, damit der Benutzer eine Datei auswählen kann
+                    // Ruft den OpenFileDialog auf
                     FileManager.OpenFileDialog();
 
                     // Falls eine Datei ausgewählt wurde, wird sie asynchron eingelesen
